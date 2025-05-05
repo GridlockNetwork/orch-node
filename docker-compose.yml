@@ -1,11 +1,11 @@
 services:
-  orch-node:
+  gridlock-orch-stack:
     image: gridlocknetwork/orch-node:latest
     container_name: orch-node
     ports:
       - "5310:5310"
-    env_file:
-      - .env
+    volumes:
+      - ${HOME}/.gridlock-orch-node/orch-node.conf:/app/.env:ro
     depends_on:
       mongodb:
         condition: service_healthy
@@ -31,7 +31,10 @@ services:
       start_period: 10s
     command: [ "--quiet", "--logpath=/dev/null", "--logappend" ]
     logging:
-      driver: "none"
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
 
   nats:
     image: nats:latest

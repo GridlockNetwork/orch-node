@@ -23,6 +23,32 @@ This will start:
 - The database (MongoDB)
 - The peer-to-peer networking layer
 
+## Configuration
+
+The orchestration node supports two configuration methods:
+
+1. **Default configuration** - Built into the container, used when no custom config is provided
+2. **Custom configuration** - For when you need to override the default settings
+
+### Using Custom Configuration
+
+1. Copy the example config file:
+   ```sh
+   cp orch-server.env.example orch-server.env
+   ```
+
+2. Edit the file with your custom settings:
+   ```sh
+   nano orch-server.env
+   ```
+
+3. Start the container:
+   ```sh
+   docker compose up
+   ```
+
+The container will automatically use your custom config if `orch-server.env` exists, otherwise it will fall back to the default configuration.
+
 For detailed customization options, local development setup, and advanced configuration, see [Customization and Development Guide](./customization_and_development.md).
 
 ## Join the Network

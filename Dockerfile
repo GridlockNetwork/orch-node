@@ -108,27 +108,13 @@ LABEL org.opencontainers.image.licenses="Apache-2.0"
 # Set working directory
 WORKDIR /app
 
-# Set environment variables
-ENV NODE_ENV=production
-
 # Copy only the bare minimum files needed to run the application
 COPY --from=builder /app/dist ./dist
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY ecosystem.config.json ./
-COPY example.env ./.env.default
-
-# Create startup script to handle config
-RUN echo '#!/bin/sh' > /app/start.sh && \
-    echo 'if [ -f "/app/.env" ]; then' >> /app/start.sh && \
-    echo '  cp /app/.env /app/.env.current' >> /app/start.sh && \
-    echo 'else' >> /app/start.sh && \
-    echo '  echo "No config mounted. Using default config."' >> /app/start.sh && \
-    echo '  echo "For custom config, mount your config file at /app/.env"' >> /app/start.sh && \
-    echo '  echo "Example: docker run -v /Users/USERNAME/.gridlock-orch-node/.env:/app/.env -p 5310:5310 gridlocknetwork/orch-node:latest"' >> /app/start.sh && \
-    echo '  cp /app/.env.default /app/.env' >> /app/start.sh && \
-    echo 'fi' >> /app/start.sh && \
-    echo 'exec "$@"' >> /app/start.sh && \
-    chmod +x /app/start.sh
+COPY docker/default.env /app/default.env
+COPY docker/start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 
 # Use a non-root user with minimal permissions
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup && \
@@ -142,5 +128,4 @@ USER appuser
 EXPOSE 5310
 
 # Set the entrypoint to handle config and then run the app
-ENTRYPOINT ["/app/start.sh"]
-CMD ["node", "dist/index.js"]
+CMD ["/app/start.sh"]

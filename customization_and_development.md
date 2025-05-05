@@ -31,7 +31,28 @@ The application supports two configuration options:
 1. Default config (baked into the image from example.env)
 2. User config (overrides default)
 
+### Environment Variables
+
+The application uses standard environment variables for configuration. See `example.env` for all available options and their default values.
+
+### Setting Up Custom Configuration
+
 We recommend storing your config file at the absolute path: `/Users/USERNAME/.gridlock-orch-node/.env` (replace `USERNAME` with your actual username).
+
+1. Create the config directory:
+   ```sh
+   mkdir -p ~/.gridlock-orch-node
+   ```
+
+2. Copy the example configuration:
+   ```sh
+   cp example.env ~/.gridlock-orch-node/.env
+   ```
+
+3. Edit the configuration file with your settings:
+   ```sh
+   nano ~/.gridlock-orch-node/.env
+   ```
 
 To run with a custom configuration:
 
