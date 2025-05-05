@@ -3,7 +3,7 @@ FROM node:20-alpine AS development
 
 # Labels for Docker Desktop to automatically configure 
 LABEL com.docker.desktop.extension.icon="https://cdn-icons-png.flaticon.com/512/5968/5968322.png"
-LABEL com.docker.container.network.publish.3000="3000"
+LABEL com.docker.container.network.publish.5310="5310"
 
 # OCI Labels
 LABEL org.opencontainers.image.title="Gridlock Orchestrator Node"
@@ -28,7 +28,7 @@ RUN npm ci && \
 RUN npm install -g nodemon
 
 # Expose the port the app runs on
-EXPOSE 3000
+EXPOSE 5310
 
 # Create development entrypoint script
 RUN echo '#!/bin/sh' > /app/entrypoint.sh && \
@@ -96,7 +96,7 @@ FROM node:20-alpine AS production
 
 # Labels for Docker Desktop to automatically configure 
 LABEL com.docker.desktop.extension.icon="https://cdn-icons-png.flaticon.com/512/5968/5968322.png"
-LABEL com.docker.container.network.publish.3000="3000"
+LABEL com.docker.container.network.publish.5310="5310"
 
 # OCI Labels
 LABEL org.opencontainers.image.title="Gridlock Orchestrator Node"
@@ -124,7 +124,7 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'else' >> /app/start.sh && \
     echo '  echo "No config mounted. Using default config."' >> /app/start.sh && \
     echo '  echo "For custom config, mount your config file at /app/.env"' >> /app/start.sh && \
-    echo '  echo "Example: docker run -v /Users/USERNAME/.gridlock-orch-node/.env:/app/.env -p 3000:3000 gridlocknetwork/orch-node:latest"' >> /app/start.sh && \
+    echo '  echo "Example: docker run -v /Users/USERNAME/.gridlock-orch-node/.env:/app/.env -p 5310:5310 gridlocknetwork/orch-node:latest"' >> /app/start.sh && \
     echo '  cp /app/.env.default /app/.env' >> /app/start.sh && \
     echo 'fi' >> /app/start.sh && \
     echo 'exec "$@"' >> /app/start.sh && \
@@ -139,7 +139,7 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup && \
 USER appuser
 
 # Expose the port the app runs on
-EXPOSE 3000
+EXPOSE 5310
 
 # Set the entrypoint to handle config and then run the app
 ENTRYPOINT ["/app/start.sh"]

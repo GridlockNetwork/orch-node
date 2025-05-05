@@ -3,7 +3,7 @@ services:
     image: gridlocknetwork/orch-node:latest
     container_name: orch-node
     ports:
-      - "3000:3000"
+      - "5310:5310"
     volumes:
       - ./example.env:/app/.env
     depends_on:
@@ -24,12 +24,12 @@ services:
     networks:
       - gridlock-net
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
       interval: 5s
       timeout: 5s
       retries: 5
       start_period: 10s
-    command: ["--quiet", "--logpath=/dev/null", "--logappend"]
+    command: [ "--quiet", "--logpath=/dev/null", "--logappend" ]
     logging:
       driver: "none"
 
@@ -42,7 +42,7 @@ services:
     networks:
       - gridlock-net
     healthcheck:
-      test: ["CMD", "/nats-server", "--help"]
+      test: [ "CMD", "/nats-server", "--help" ]
       interval: 5s
       timeout: 5s
       retries: 5

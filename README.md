@@ -19,7 +19,7 @@ docker compose up
 This will start:
 
 - The local network that connects all the containers
-- The orchestration node (http://localhost:3000)
+- The orchestration node (http://localhost:5310)
 - The database (MongoDB)
 - The peer-to-peer networking layer
 

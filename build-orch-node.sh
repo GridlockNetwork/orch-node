@@ -39,4 +39,4 @@ echo -e "\nImage size information:"
 docker images ${DOCKER_REPO}:${NEW_VERSION} --format "{{.Repository}}:{{.Tag}} - {{.Size}}"
 
 echo -e "\n✅ Done! Image built: ${DOCKER_REPO}:${NEW_VERSION}"
-echo "To run: docker run --rm -v /Users/${USER}/.gridlock-orch-node/.env:/app/.env -p 3000:3000 ${DOCKER_REPO}:latest"
+echo "To run: docker run --rm -v /Users/${USER}/.gridlock-orch-node/.env:/app/.env -p 5310:5310 ${DOCKER_REPO}:latest"

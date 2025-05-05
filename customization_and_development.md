@@ -38,7 +38,7 @@ To run with a custom configuration:
 ```sh
 docker run --rm --name orch-node --network gridlock-net \
   -v /Users/USERNAME/.gridlock-orch-node/.env:/app/.env \
-  -p 3000:3000 \
+  -p 5310:5310 \
   gridlocknetwork/orch-node:latest
 ```
 

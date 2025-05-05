@@ -1,6 +1,6 @@
 {
   "name": "gridlock-orch-node",
-  "version": "1.1.1",
+  "version": "1.1.3",
   "description": "Gridlock Orchestration Node",
   "main": "dist/index.js",
   "engines": {
