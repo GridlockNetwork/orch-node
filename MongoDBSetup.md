@@ -2,65 +2,64 @@
 
 [← Back to custom development guide](customization_and_development.md)
 
-Quick setup guide for MongoDB for the Gridlock storage layer.
-
-## Prerequisites
-
-- Docker installed on your system
-
 ## Quick Start
 
-```bash
-docker run -d --name mongodb --network gridlock-net \
-  -p 27017:27017 \
-  -e MONGO_INITDB_ROOT_USERNAME=gridlock_admin \
-  -e MONGO_INITDB_ROOT_PASSWORD=gridlock_dev_password \
-  mongo:latest
-```
+The MongoDB database is automatically configured and started when you run `docker compose up`. The configuration is managed through environment variables in your `.env` file.
 
-Verify the connection:
+## Configuration
 
-```bash
-docker exec -it mongodb mongosh -u gridlock_admin -p gridlock_dev_password
-```
+1. Copy the example environment file if you haven't already:
+   ```sh
+   cp example.env .env
+   ```
 
-Note: The application will automatically create the necessary database and collections when it starts up.
+2. The following MongoDB-related variables should be set in your `.env` file:
+   ```
+   MONGO_USERNAME=your_username
+   MONGO_PASSWORD=your_password
+   MONGODB_URL=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongodb:27017/gridlock?authSource=admin
+   ```
 
-## Custom Configuration (Optional)
+## Connection Details
 
-If you need custom MongoDB settings:
+- **Host**: localhost (or mongodb when using Docker)
+- **Port**: 27017
+- **Database**: gridlock
+- **Auth Source**: admin
 
-```bash
-mkdir -p ~/.gridlock-orch-node
-```
+## Manual Setup (Optional)
 
-Create `~/.gridlock-orch-node/mongodb.conf`:
+If you need to run MongoDB outside of Docker:
 
-```yaml
-storage:
-  dbPath: /data/db
-net:
-  port: 27017
-  bindIp: 0.0.0.0
-```
+1. Install MongoDB locally
+2. Start the MongoDB service
+3. Create a user with appropriate permissions:
+   ```javascript
+   use admin
+   db.createUser({
+     user: "your_username",
+     pwd: "your_password",
+     roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]
+   })
+   ```
 
-Run with custom config:
+## Troubleshooting
 
-```bash
-docker run -d --name mongodb \
-  -p 27017:27017 \
-  -v ~/.gridlock-orch-node/mongodb.conf:/etc/mongod.conf \
-  -v mongodb_data:/data/db \
-  -e MONGO_INITDB_ROOT_USERNAME=gridlock_admin \
-  -e MONGO_INITDB_ROOT_PASSWORD=gridlock_dev_password \
-  mongo:latest --config /etc/mongod.conf
-```
+If you encounter connection issues:
 
-## Security Considerations
+1. Verify MongoDB is running:
+   ```sh
+   docker compose ps
+   ```
 
-- Always use strong passwords for database users
-- Enable authentication in production environments
-- Consider using TLS for secure connections
-- Implement proper access controls
-- Regularly backup your data
-- Keep MongoDB updated to the latest stable version
+2. Check the logs:
+   ```sh
+   docker compose logs mongodb
+   ```
+
+3. Ensure your `.env` file contains the correct credentials
+
+4. Verify network connectivity:
+   ```sh
+   docker network inspect gridlock-net
+   ```

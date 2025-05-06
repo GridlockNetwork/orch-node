@@ -2,109 +2,63 @@
 
 # Customization and Development Guide
 
-This guide provides detailed instructions for customizing and developing the Gridlock Orchestration Node.
+## Components
 
-## Prerequisites
+### Orchestration Node
+The main application that coordinates between clients and guardians. It manages client sessions, routes messages, and tracks guardian status.
 
-Setting up the orchestration node requires three essential components:
+Runs on port 5310.
 
-1. **Docker Network**: Required for local development and testing
+### MongoDB
+Database for storing orchestration node data. Handles client sessions, guardian info, and message history.
 
-   ```sh
-   docker network create gridlock-net
-   docker compose up
-   ```
+Runs on port 27017.
 
-   Note: This is only needed if you're running other containers locally (Guardian Nodes, MongoDB, NATS). If you're connecting to internet-based MongoDB and NATS services, you don't need this network.
+### NATS
+Message broker for real-time communication between components. Routes messages between clients and guardians.
 
-2. **MongoDB Database**: Required for data persistence
-
-   - Follow the [MongoDB Setup Guide](MongoDBSetup.md) to get started
-
-3. **NATS Messaging**: Required for communication between components
-   - Follow the [NATS Setup Guide](NatsSetup.md) to get started
-
-## Configuration
-
-The application supports two configuration options:
-
-1. Default config (baked into the image from example.env)
-2. User config (overrides default)
-
-### Environment Variables
-
-The application uses standard environment variables for configuration. See `example.env` for all available options and their default values.
-
-### Setting Up Custom Configuration
-
-We recommend storing your config file at the absolute path: `/Users/USERNAME/.gridlock-orch-node/.env` (replace `USERNAME` with your actual username).
-
-1. Create the config directory:
-   ```sh
-   mkdir -p ~/.gridlock-orch-node
-   ```
-
-2. Copy the example configuration:
-   ```sh
-   cp example.env ~/.gridlock-orch-node/.env
-   ```
-
-3. Edit the configuration file with your settings:
-   ```sh
-   nano ~/.gridlock-orch-node/.env
-   ```
-
-To run with a custom configuration:
-
-```sh
-docker run --rm --name orch-node --network gridlock-net \
-  -v /Users/USERNAME/.gridlock-orch-node/.env:/app/.env \
-  -p 5310:5310 \
-  gridlocknetwork/orch-node:latest
-```
+Runs on ports:
+- 4222 (client connections)
+- 8222 (monitoring)
+- 6222 (cluster)
 
 ## Local Development Setup
 
-To run the project locally, copy and run these commands:
+Start MongoDB and NATS:
+```sh
+# Create network if it doesn't exist
+docker network create gridlock-net
 
+# Start MongoDB with auth
+docker run -d --name mongodb \
+  --network gridlock-net \
+  -p 27017:27017 \
+  -e MONGO_INITDB_ROOT_USERNAME=gridlock_user \
+  -e MONGO_INITDB_ROOT_PASSWORD=gridlock_dev_password \
+  -v mongodb_data:/data/db \
+  mongo:latest
+
+# Start NATS with config
+docker run -d --name nats \
+  --network gridlock-net \
+  -p 4222:4222 \
+  -p 8222:8222 \
+  -p 6222:6222 \
+  -v $(pwd)/nats-server.conf:/etc/nats/nats-server.conf:ro \
+  nats:latest --config /etc/nats/nats-server.conf
+```
+
+Setup and run the orchestration node:
 ```sh
 npm install
+cp example.env .env
 npm run compile
 npm run dev
 ```
 
-## Customizing Docker Compose
+## Customization
 
-The default docker-compose setup uses standard configurations. To customize:
-
-1. Create a `docker-compose.override.yml` file
-2. Add your custom configurations
-3. Run `docker-compose up`
-
-Example override file:
-
-```yaml
-version: '3.8'
-services:
-  orch-node:
-    environment:
-      - CUSTOM_ENV_VAR=value
-    volumes:
-      - ./custom-config:/app/config
-  mongodb:
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=custom_user
-      - MONGO_INITDB_ROOT_PASSWORD=custom_password
-  nats:
-    environment:
-      - NATS_USER=custom_user
-      - NATS_PASSWORD=custom_password
-```
-
-## Advanced Configuration
-
-For more advanced configuration options, see:
-
-- [MongoDB Configuration Guide](MongoDBSetup.md)
-- [NATS Configuration Guide](NatsSetup.md)
-- [System Overview](SystemOverview.md)
+- MongoDB: Change auth credentials in docker run command
+- NATS: Edit nats-server.conf for auth and cluster settings
+- Ports: Modify port mappings in docker run commands
+- Network: Use different network name by changing gridlock-net

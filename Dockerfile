@@ -18,7 +18,6 @@ WORKDIR /app
 # Copy all application files
 COPY package.json package-lock.json tsconfig.json ecosystem.config.json ./
 COPY src/ ./src/
-COPY example.env ./.env.default
 
 # Install dependencies (including dev dependencies)
 RUN npm ci && \
@@ -30,20 +29,7 @@ RUN npm install -g nodemon
 # Expose the port the app runs on
 EXPOSE 5310
 
-# Create development entrypoint script
-RUN echo '#!/bin/sh' > /app/entrypoint.sh && \
-    echo 'if [ -f "/app/.env" ]; then' >> /app/entrypoint.sh && \
-    echo '  echo "Using external .env file"' >> /app/entrypoint.sh && \
-    echo '  cp /app/.env /app/.env.current' >> /app/entrypoint.sh && \
-    echo 'else' >> /app/entrypoint.sh && \
-    echo '  echo "Using development .env.dev values"' >> /app/entrypoint.sh && \
-    echo '  cp /app/.env.default /app/.env' >> /app/entrypoint.sh && \
-    echo 'fi' >> /app/entrypoint.sh && \
-    echo 'exec "$@"' >> /app/entrypoint.sh && \
-    chmod +x /app/entrypoint.sh
-
-# Set the entrypoint to handle env vars and then run the app
-ENTRYPOINT ["/app/entrypoint.sh"]
+# Set the entrypoint to run the app
 CMD ["npm", "run", "dev"]
 
 # Build stage - compile TypeScript
@@ -112,9 +98,6 @@ WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY ecosystem.config.json ./
-COPY docker/default.env /app/default.env
-COPY docker/start.sh /app/start.sh
-RUN chmod +x /app/start.sh
 
 # Use a non-root user with minimal permissions
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup && \
@@ -127,5 +110,5 @@ USER appuser
 # Expose the port the app runs on
 EXPOSE 5310
 
-# Set the entrypoint to handle config and then run the app
-CMD ["/app/start.sh"]
+# Run the application
+CMD ["node", "dist/index.js"]
