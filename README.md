@@ -14,7 +14,7 @@ Copy and paste these commands to start everything:
 ```sh
 docker network create gridlock-net
 cp example.env .env
-docker compose up
+docker compose -p gridlock-orch-stack up
 ```
 
 This will start:
@@ -33,3 +33,4 @@ This code is yours to use — but it's even better when you're part of the offic
 By running [guardian nodes](https://github.com/GridlockNetwork/guardian-node), you can earn rewards while helping secure the network.
 
 Join the community: [gridlock.network/join](https://gridlock.network/join)
+community

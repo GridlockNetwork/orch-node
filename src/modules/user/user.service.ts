@@ -31,7 +31,6 @@ export const registerUser = async (userBody: NewRegisteredUser): Promise<IUserDo
   const existingUser = await User.findOne({ email: userBody.email });
   if (existingUser) {
     if (existingUser.email.includes('piedpiper.com')) {
-      console.log('Deleting user', existingUser.email);
       await existingUser.deleteOne();
     } else {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Cannot register user, email already taken');
@@ -266,7 +265,6 @@ export const transferUser = async (
 
   // Sign using the appropriate method based on wallet type
   if (wallet.blockchain === 'solana') {
-    console.debug('keyBundle', keyBundle);
     await eddsa.sign(email, wallet, clientE2ePublicKey, keyBundle, transferMessage, true);
   } else {
     await ecdsa.sign(email, wallet, clientE2ePublicKey, keyBundle, transferMessage);
